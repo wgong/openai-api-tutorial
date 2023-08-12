@@ -1,0 +1,10 @@
+API_KEYS:
+  OPENAI:
+    ORG_ID: ""
+    API_KEY: "sk-Tkp"
+    MODEL: "gpt-3.5-turbo"
+
+  HUGGING_FACE:
+    ORG_ID: ""
+    API_KEY: ""
+    MODEL: ""

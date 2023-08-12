@@ -3,40 +3,34 @@ import time
 import yaml
 import openai
 import gradio as gr
+import os
+from pathlib import Path
 
+SENSITIVE_DATA_WARN = """
+Meesa sorry, but it looks like yousa prompt contains sensitive information. For security reasons, meesa cannot let it through. Please be careful not to include any sensitive information in your prompts in the future. If yousa still have a question or concern, please submit a new prompt without the sensitive information, and meesa will do our best to help you. Thank yousa for your understanding!
+"""
+
+CHAT_FLOW_INIT = [
+        {'role': 'system', 'content': 'You are an assistant that speaks like Jar Jar Binks from Star Wars.'}
+    ]
+
+chat_flow = CHAT_FLOW_INIT
 
 
 ## API INSTANTIATION
 ## ---------------------------------------------------------------------------------------------------------------------
 # Loading the API key and organization ID from file (NOT pushed to GitHub)
-with open('../keys/openai-keys.yaml') as f:
-    keys_yaml = yaml.safe_load(f)
+# store API keys in yaml file like "sample.yml"
+all_keys = yaml.safe_load(open(Path(os.getenv("API_KEYS_FILE"))))
+api_key = all_keys["API_KEYS"]["OPENAI"]
 
 # Applying our API key and organization ID to OpenAI
-openai.organization = keys_yaml['ORG_ID']
-openai.api_key = keys_yaml['API_KEY']
-
+openai.organization = api_key['ORG_ID']
+openai.api_key = api_key['API_KEY']
 
 
 ## HELPER FUNCTIONS
 ## ---------------------------------------------------------------------------------------------------------------------
-def initiate_chat_flow():
-    '''
-    Initiates a new chat flow
-
-    Inputs:
-        - N/A
-
-    Returns:
-        - chat_flow (list): A newly initiated chat flow
-    '''
-
-    chat_flow = [
-        {'role': 'system', 'content': 'You are an assistant that speaks like Jar Jar Binks from Star Wars.'}
-    ]
-
-    return chat_flow
-
 
 
 def clear_chat_interface():
@@ -53,7 +47,7 @@ def clear_chat_interface():
     global chat_flow
 
     # Reinitiating the chat flow
-    chat_flow = initiate_chat_flow()
+    chat_flow = CHAT_FLOW_INIT
 
 
 
@@ -104,7 +98,7 @@ def process_prompt(user_prompt, chatbot):
         time.sleep(1)
 
         # Adding the appropriate message to the chatbot
-        chatbot.append((user_prompt,'Meesa sorry, but it looks like yousa prompt contains sensitive information. For security reasons, meesa cannot let it through. Please be careful not to include any sensitive information in your prompts in the future. If yousa still have a question or concern, please submit a new prompt without the sensitive information, and meesa will do our best to help you. Thank yousa for your understanding!'))
+        chatbot.append((user_prompt, SENSITIVE_DATA_WARN))
 
         # Clearing the prompt for the next user input
         user_prompt = ''
@@ -116,7 +110,7 @@ def process_prompt(user_prompt, chatbot):
 
     # Obtaining the response from the API
     chat_response = openai.ChatCompletion.create(
-        model = 'gpt-3.5-turbo',
+        model = api_key["MODELS"]["CHAT"],
         messages = chat_flow
     )
 
@@ -139,14 +133,14 @@ def process_prompt(user_prompt, chatbot):
 ## GRADIO UI LAYOUT & FUNCTIONALITY
 ## ---------------------------------------------------------------------------------------------------------------------
 # Defining the building blocks that represent the form and function of the Gradio UI
-with gr.Blocks() as chat_ui:
+with gr.Blocks() as demo:
     
     # Instantiating the chatbot interface
-    header_image = gr.Image('jarjar.png').style(height = (447 / 3), show_label = False)
-    chatbot = gr.Chatbot(label = 'Jar Jar Binks')
-    user_prompt = gr.Textbox(placeholder = 'To send mesa a message, just type what yousa would like to say and press the "Enter" key to submit. Mesa waiting to hear from yousah!',
+    header_image = gr.Image('duck.png').style(height = (447 / 3), show_label = False)
+    chatbot = gr.Chatbot(label = 'Duck Chat')
+    user_prompt = gr.Textbox(placeholder = 'To send mesa a message, just type what you would like to say and press "Enter" to submit. Duck is ready to chat!',
                              show_label = False)
-    start_new_convo_button = gr.Button('Start New Conversation')
+    start_new_convo_button = gr.Button('Start New Chat')
 
     # Defining the behavior for what occurs when the user hits "Enter" after typing a prompt
     user_prompt.submit(fn = process_prompt,
@@ -165,8 +159,5 @@ with gr.Blocks() as chat_ui:
 ## ---------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
 
-    # Instantiating the initial chat flow used as a global variable
-    chat_flow = initiate_chat_flow()
-
     # Launching the Gradio Chatbot
-    chat_ui.launch()
+    demo.launch()

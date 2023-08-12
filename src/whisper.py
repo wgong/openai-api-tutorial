@@ -2,18 +2,22 @@ import os
 import yaml
 import openai
 import gradio as gr
+import os
+from pathlib import Path
 
+# sample .wav files
+# https://www2.cs.uic.edu/~i101/SoundFiles/preamble.wav
 
-
-## OPENAI CONNECTION
+## API INSTANTIATION
 ## ---------------------------------------------------------------------------------------------------------------------
 # Loading the API key and organization ID from file (NOT pushed to GitHub)
-with open('../keys/openai-keys.yaml') as f:
-    keys_yaml = yaml.safe_load(f)
+# store API keys in yaml file like "sample.yml"
+all_keys = yaml.safe_load(open(Path(os.getenv("API_KEYS_FILE"))))
+api_key = all_keys["API_KEYS"]["OPENAI"]
 
 # Applying our API key and organization ID to OpenAI
-openai.organization = keys_yaml['ORG_ID']
-openai.api_key = keys_yaml['API_KEY']
+openai.organization = api_key['ORG_ID']
+openai.api_key = api_key['API_KEY']
 
 
 
@@ -31,14 +35,14 @@ def transcribe(audio_intake_file):
     '''
 
     # Appending the .wav file extension to the existing audio file
-    os.rename(audio_intake_file, audio_intake_file + '.wav')
+    # os.rename(audio_intake_file, audio_intake_file + '.wav')
     print(audio_intake_file)
 
     # Loading the audio file in a read-only bytes format
     rb_audio = open(audio_intake_file, 'rb')
 
     # Getting the transcription from OpenAI's Whisper API
-    transcript = openai.Audio.transcribe(model = 'whisper-1', file = rb_audio)
+    transcript = openai.Audio.transcribe(model = api_key["MODELS"]["AUDIO"], file = rb_audio)
 
     return transcript
 
@@ -49,7 +53,7 @@ def transcribe(audio_intake_file):
 ## GRADIO UI LAYOUT & FUNCTIONALITY
 ## ---------------------------------------------------------------------------------------------------------------------
 # Defining the building blocks that represent the form and function of the Gradio UI
-with gr.Blocks() as whisper_ui:
+with gr.Blocks() as demo:
     
     # Instantiating the UI interface
     header = gr.Markdown('# Whisper-Gradio UI!')
@@ -70,4 +74,4 @@ with gr.Blocks() as whisper_ui:
 if __name__ == "__main__":
 
     # Launching the Gradio UI
-    whisper_ui.launch()
+    demo.launch()

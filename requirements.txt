@@ -1,0 +1,16 @@
+# 2023-08-11
+# Anaconda python3.10
+# pip3 install -r requirements.txt
+######################################
+
+# Python client library for the OpenAI API
+openai          # 0.27.8
+
+# Building applications with LLMs through composability
+langchain       # 0.0.166
+
+# Python GUI library for easily interacting with trained machine learning models
+gradio          # 3.39.0
+
+# Collection of common interactive command line user interfaces, based on Inquirer.js
+inquirer        # 3.1.3 

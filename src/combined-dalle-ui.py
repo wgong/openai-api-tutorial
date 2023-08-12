@@ -5,18 +5,20 @@ import gradio as gr
 from io import BytesIO
 from base64 import b64decode
 from PIL import Image
+import os
+from pathlib import Path
 
 
-
-## OPENAI CONNECTION
+## API INSTANTIATION
 ## ---------------------------------------------------------------------------------------------------------------------
 # Loading the API key and organization ID from file (NOT pushed to GitHub)
-with open('../keys/openai-keys.yaml') as f:
-    keys_yaml = yaml.safe_load(f)
+# store API keys in yaml file like "sample.yml"
+all_keys = yaml.safe_load(open(Path(os.getenv("API_KEYS_FILE"))))
+api_key = all_keys["API_KEYS"]["OPENAI"]
 
 # Applying our API key and organization ID to OpenAI
-openai.organization = keys_yaml['ORG_ID']
-openai.api_key = keys_yaml['API_KEY']
+openai.organization = api_key['ORG_ID']
+openai.api_key = api_key['API_KEY']
 
 
 
@@ -86,7 +88,7 @@ def generate_similar_images(upload_image):
 ## GRADIO UI LAYOUT & FUNCTIONALITY
 ## ---------------------------------------------------------------------------------------------------------------------
 # Defining the building blocks that represent the form and function of the Gradio UI
-with gr.Blocks(title = 'DALL-E Combined UI', theme = 'base') as combined_dalle_ui:
+with gr.Blocks(title = 'DALL-E Combined UI', theme = 'base') as demo:
 
     # Setting the display into two columns
     with gr.Row():
@@ -148,4 +150,4 @@ with gr.Blocks(title = 'DALL-E Combined UI', theme = 'base') as combined_dalle_u
 if __name__ == "__main__":
 
     # Launching the Gradio UI
-    combined_dalle_ui.launch()
+    demo.launch()
