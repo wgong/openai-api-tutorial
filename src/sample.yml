@@ -2,9 +2,21 @@ API_KEYS:
   OPENAI:
     ORG_ID: ""
     API_KEY: "sk-Tkp"
-    MODEL: "gpt-3.5-turbo"
+    MODELS: 
+      CHAT: "gpt-3.5-turbo"
+      AUDIO2TEXT: "whisper-1"
 
   HUGGING_FACE:
     ORG_ID: ""
-    API_KEY: ""
-    MODEL: ""
+    API_KEYS: 
+      HF_READ: "hf_PWh"
+      HF_WRITE: "hf_PWh"
+    MODELS:
+      CHAT: ""
+      TRANSLATION: ""
+      TEXT2IMAGE: ""
+      TEXT2AUDIO: ""
+      TEXT2VIDEO: ""
+      IMAGE2TEXT: ""
+      AUDIO2TEXT: ""
+      VIDEO2TEXT: ""

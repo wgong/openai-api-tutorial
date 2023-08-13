@@ -42,7 +42,9 @@ def transcribe(audio_intake_file):
     rb_audio = open(audio_intake_file, 'rb')
 
     # Getting the transcription from OpenAI's Whisper API
-    transcript = openai.Audio.transcribe(model = api_key["MODELS"]["AUDIO"], file = rb_audio)
+    transcript = openai.Audio.transcribe(
+        model = api_key["MODELS"]["AUDIO2TEXT"], 
+        file = rb_audio)
 
     return transcript
 
